@@ -10,7 +10,6 @@ import mysql.connector
 from os import environ
 
 
-
 def filter_datum(
     fields: List[str],
     redaction: str,
