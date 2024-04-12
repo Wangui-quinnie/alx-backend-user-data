@@ -6,6 +6,8 @@ Module for filtering log data
 import logging
 import re
 from typing import List
+import mysql.connector
+import os
 
 
 def filter_datum(
@@ -66,3 +68,22 @@ def get_logger() -> logging.Logger:
 
 
 PII_FIELDS: List[str] = ("name", "email", "phone", "ssn", "password")
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Returns a connector to the database"""
+    # Get database credentials from environment variables
+    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    # Connect to the MySQL database
+    db = mysql.connector.connect(
+        host=host,
+        user=username,
+        password=password,
+        database=db_name
+    )
+
+    return db
