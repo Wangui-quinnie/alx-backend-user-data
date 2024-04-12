@@ -8,6 +8,7 @@ import re
 from typing import List
 import mysql.connector
 from os import environ
+import datetime
 
 
 def filter_datum(
@@ -84,3 +85,30 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
                                                       host=host,
                                                       database=db_name)
     return conn
+
+
+def main() -> None:
+    """
+    Retrieves data from the database and logs it with filtered format.
+    """
+    db_connection = get_db()
+
+    if db_connection:
+        cursor = db_connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users")
+        users_data = cursor.fetchall()
+
+        filtered_fields = ["name", "email", "phone", "ssn", "password"]
+
+        for row in users_data:
+            users_info = "; ".join(
+                f"{field}={('***' if field in filtered_fields else value)}"
+                for field, value in row.items())
+            current_time = datetime.datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S,%f")
+            print(f"[HOLBERTON] user_data INFO {current_time}: {users_info}; "
+                  f"Filtered fields: {', '.join(filtered_fields)}")
+
+
+if __name__ == "__main__":
+    main()
