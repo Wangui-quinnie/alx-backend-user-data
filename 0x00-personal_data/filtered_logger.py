@@ -7,7 +7,8 @@ import logging
 import re
 from typing import List
 import mysql.connector
-import os
+from os import environ
+
 
 
 def filter_datum(
@@ -71,19 +72,16 @@ PII_FIELDS: List[str] = ("name", "email", "phone", "ssn", "password")
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
-    """Returns a connector to the database"""
-    # Get database credentials from environment variables
-    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
-    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
-    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
-    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+    """
+    Returns a connector to a database
+    """
+    username = environ.get('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = environ.get('PERSONAL_DATA_DB_PASSWORD', '')
+    db_name = environ.get('PERSONAL_DATA_DB_NAME')
+    host = environ.get('PERSONAL_DATA_DB_HOST')
 
-    # Connect to the MySQL database
-    db = mysql.connector.connection.MYSQLConnection(
-        host=host,
-        user=username,
-        password=password,
-        database=db_name
-    )
-
-    return db
+    conn = mysql.connector.connection.MySQLConnection(user=username,
+                                                      password=password,
+                                                      host=host,
+                                                      database=db_name)
+    return conn
