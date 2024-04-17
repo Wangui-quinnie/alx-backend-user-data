@@ -22,6 +22,10 @@ class Auth:
                 excluded_path = excluded_path[:-1]  # Remove trailing slash
             if path == excluded_path:
                 return False
+        for excluded_path in excluded_paths:
+            if excluded_path.endswith('*'):
+                if path.startswith(excluded_path[:-1]):
+                    return False
         return True
 
     def authorization_header(self, request=None) -> str:
@@ -30,6 +34,6 @@ class Auth:
             return None
         return request.headers.get('Authorization')
 
-    def current_user(self, request=None):
+    def current_user(self, request=None) -> TypeVar('User'):
         """Get the current user from the request."""
         return None
