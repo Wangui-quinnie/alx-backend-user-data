@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Session authentication route."""
+"""Session authentication views."""
 
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 from api.v1.views import app_views
 from models.user import User
 from api.v1.app import auth
@@ -34,3 +34,14 @@ def session_login():
         return response, 200
 
     return jsonify({"error": "Method Not Allowed"}), 405
+
+
+@app_views.route('/auth_session/logout', methods=['DELETE', 'GET'],
+                 strict_slashes=False)
+def logout():
+    """Logs out a user by deleting the session"""
+    if request.method == 'DELETE':
+        if not auth.destroy_session(request):
+            abort(404)
+        return jsonify({}), 200
+    return jsonify({}), 405
